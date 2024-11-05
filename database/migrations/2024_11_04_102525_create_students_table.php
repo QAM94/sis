@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('cnic');
             $table->date('dob');
             $table->date('enrollment_date');
+            $table->enum('status', ['Enrolled', 'Completed', 'Suspended', 'Withdrawn']);
             $table->timestamps();
             $table->softDeletes();
         });

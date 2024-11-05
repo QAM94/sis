@@ -23,37 +23,51 @@ class StudentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->required(),
+                Forms\Components\Section::make('Enter Student User Details')
+                    ->schema([
+                        Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->required()
+                            ->maxLength(99),
+                        Forms\Components\TextInput::make('password')
+                            ->password()
+                            ->required()
+                            ->maxLength(15),
+                    ])->columns(2),
                 Forms\Components\Select::make('program_id')
                     ->relationship('program', 'title')
                     ->required(),
                 Forms\Components\TextInput::make('reg_no')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(15),
                 Forms\Components\TextInput::make('full_name')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(99),
                 Forms\Components\Select::make('gender')
                     ->options(['Male' => 'Male',
                         'Female' => 'Female'])
                     ->required(),
                 Forms\Components\TextInput::make('contact')
-                    ->required()
-                    ->maxLength(255),
+                    ->tel()
+                    ->required(),
                 Forms\Components\TextInput::make('address')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('nationality')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(15),
                 Forms\Components\TextInput::make('cnic')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(15),
                 Forms\Components\DatePicker::make('dob')
                     ->required(),
                 Forms\Components\DatePicker::make('enrollment_date')
+                    ->required(),
+                Forms\Components\Select::make('status')
+                    ->options(['Enrolled' => 'Enrolled',
+                        'Completed' => 'Completed',
+                        'Suspended' => 'Suspended',
+                        'Withdrawn' => 'Withdrawn'])
                     ->required(),
             ]);
     }
@@ -62,31 +76,39 @@ class StudentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('program_id')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('reg_no')
-                    ->searchable(),
+                    ->label('Reg ID')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('program.title')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('full_name')
+                    ->label('Name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('gender'),
+                Tables\Columns\TextColumn::make('user.email')
+                    ->label('Email Address'),
+                Tables\Columns\TextColumn::make('gender')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('contact')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nationality')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('cnic')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('dob')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('enrollment_date')
+                    ->label('Enrolled On')
                     ->date()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -101,9 +123,24 @@ class StudentResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('Status')
+                    ->multiple()
+                    ->options([
+                        'Enrolled' => 'Enrolled',
+                        'Completed' => 'Completed',
+                        'Suspended' => 'Suspended',
+                        'Withdrawn' => 'Withdrawn'
+                    ])
+                    ->attribute('status'),
+                Tables\Filters\SelectFilter::make('Gender')
+                    ->options([
+                        'Male' => 'Male',
+                        'Female' => 'Female'
+                    ])
+                    ->attribute('gender')
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -125,6 +162,7 @@ class StudentResource extends Resource
         return [
             'index' => Pages\ListStudents::route('/'),
             'create' => Pages\CreateStudent::route('/create'),
+            'view' => Pages\ViewStudent::route('/{record}'),
             'edit' => Pages\EditStudent::route('/{record}/edit'),
         ];
     }

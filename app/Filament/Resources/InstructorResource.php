@@ -25,23 +25,23 @@ class InstructorResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('full_name')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(99),
                 Forms\Components\Select::make('gender')
                     ->options(['Male' => 'Male',
                         'Female' => 'Female'])
                     ->required(),
                 Forms\Components\TextInput::make('contact')
-                    ->required()
-                    ->maxLength(255),
+                    ->tel()
+                    ->required(),
                 Forms\Components\TextInput::make('address')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('nationality')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(15),
                 Forms\Components\TextInput::make('cnic')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(15),
                 Forms\Components\DatePicker::make('dob')
                     ->required(),
                 Forms\Components\DatePicker::make('joining_date')
@@ -51,6 +51,10 @@ class InstructorResource extends Resource
                         'Visiting' => 'Visiting',
                         'Permanent' => 'Permanent'])
                     ->required(),
+                Forms\Components\Select::make('courses')
+                    ->relationship('courses', 'title')
+                    ->multiple()->preload()
+                    ->required(),
             ]);
     }
 
@@ -59,17 +63,23 @@ class InstructorResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('full_name')
+                    ->label('Name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('gender'),
+                Tables\Columns\TextColumn::make('gender')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('contact')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nationality')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('cnic')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('dob')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('joining_date')
@@ -90,9 +100,23 @@ class InstructorResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('Status')
+                    ->multiple()
+                    ->options([
+                        'Probation' => 'Probation',
+                        'Visiting' => 'Visiting',
+                        'Permanent' => 'Permanent'
+                    ])
+                    ->attribute('status'),
+                Tables\Filters\SelectFilter::make('Gender')
+                    ->options([
+                        'Male' => 'Male',
+                        'Female' => 'Female'
+                    ])
+                    ->attribute('gender')
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -105,7 +129,7 @@ class InstructorResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\CoursesRelationManager::class
         ];
     }
 
@@ -114,6 +138,7 @@ class InstructorResource extends Resource
         return [
             'index' => Pages\ListInstructors::route('/'),
             'create' => Pages\CreateInstructor::route('/create'),
+            'view' => Pages\ViewInstructor::route('/{record}'),
             'edit' => Pages\EditInstructor::route('/{record}/edit'),
         ];
     }

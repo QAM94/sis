@@ -57,7 +57,13 @@ class ProgramResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('Type')
+                    ->options([
+                        'Under-Graduate' => 'Under-Graduate',
+                        'Graduate' => 'Graduate',
+                        'Postgraduate' => 'Postgraduate'
+                    ])
+                    ->attribute('type'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
