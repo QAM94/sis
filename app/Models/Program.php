@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Program extends Model
@@ -16,9 +16,9 @@ class Program extends Model
         return $this->hasMany(Student::class);
     }
 
-    public function courses(): HasManyThrough
+    public function courses(): BelongsToMany
     {
-        return $this->HasManyThrough(Course::class, ProgramCourse::class,
-            'program_id', 'course_id');
+        return $this->BelongsToMany(Course::class, 'program_courses')
+            ->withPivot('domain_id');
     }
 }
