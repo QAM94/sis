@@ -16,12 +16,15 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('program_id')->constrained()->onDelete('cascade');
             $table->string('reg_no')->unique();
-            $table->string('full_name');
+            $table->string('first_name');
+            $table->string('last_name');
             $table->enum('gender', ['Male', 'Female']);
             $table->string('contact');
+            $table->string('email');
             $table->string('address');
+            $table->string('postcode');
             $table->string('nationality');
-            $table->string('cnic');
+            $table->string('sin');
             $table->date('dob');
             $table->date('enrollment_date');
             $table->enum('status', ['Enrolled', 'Completed', 'Suspended', 'Withdrawn']);

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('contact');
             $table->string('address');
             $table->string('nationality');
-            $table->string('cnic');
+            $table->string('sin');
             $table->date('dob');
             $table->date('joining_date');
             $table->enum('status', ['Probation', 'Visiting', 'Permanent']);

@@ -39,7 +39,7 @@ class InstructorResource extends Resource
                 Forms\Components\TextInput::make('nationality')
                     ->required()
                     ->maxLength(15),
-                Forms\Components\TextInput::make('cnic')
+                Forms\Components\TextInput::make('sin')
                     ->required()
                     ->maxLength(15),
                 Forms\Components\DatePicker::make('dob')
@@ -75,7 +75,7 @@ class InstructorResource extends Resource
                 Tables\Columns\TextColumn::make('nationality')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('cnic')
+                Tables\Columns\TextColumn::make('sin')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('dob')

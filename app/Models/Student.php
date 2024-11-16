@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Student extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['user_id', 'program_id', 'reg_no', 'full_name', 'gender', 'contact',
-        'address', 'nationality', 'cnic', 'dob', 'enrollment_date'];
+    protected $fillable = ['user_id', 'program_id', 'reg_no', 'first_name', 'last_name', 'contact', 'email',
+        'address', 'postcode', 'nationality', 'sin', 'dob', 'gender', 'enrollment_date'];
 
     public function user() : BelongsTo {
         return $this->belongsTo(User::class);

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Instructor extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['full_name', 'gender', 'contact', 'address', 'nationality', 'cnic',
+    protected $fillable = ['full_name', 'gender', 'contact', 'address', 'nationality', 'sin',
         'dob', 'joining_date', 'status'];
 
     public function courses(): BelongsToMany

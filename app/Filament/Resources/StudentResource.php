@@ -23,43 +23,42 @@ class StudentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Enter Student User Details')
-                    ->schema([
-                        Forms\Components\TextInput::make('email')
-                            ->email()
-                            ->required()
-                            ->maxLength(99),
-                        Forms\Components\TextInput::make('password')
-                            ->password()
-                            ->required()
-                            ->maxLength(15),
-                    ])->columns(2),
                 Forms\Components\Select::make('program_id')
                     ->relationship('program', 'title')
                     ->required(),
                 Forms\Components\TextInput::make('reg_no')
                     ->required()
-                    ->maxLength(15),
-                Forms\Components\TextInput::make('full_name')
+                    ->numeric()
+                    ->unique(),
+                Forms\Components\TextInput::make('first_name')
                     ->required()
-                    ->maxLength(99),
-                Forms\Components\Select::make('gender')
-                    ->options(['Male' => 'Male',
-                        'Female' => 'Female'])
-                    ->required(),
+                    ->maxLength(50),
+                Forms\Components\TextInput::make('last_name')
+                    ->required()
+                    ->maxLength(50),
                 Forms\Components\TextInput::make('contact')
                     ->tel()
+                    ->required(),
+                Forms\Components\TextInput::make('email')
+                    ->email()
                     ->required(),
                 Forms\Components\TextInput::make('address')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('postcode')
+                    ->required()
+                    ->maxLength(15),
                 Forms\Components\TextInput::make('nationality')
                     ->required()
                     ->maxLength(15),
-                Forms\Components\TextInput::make('cnic')
+                Forms\Components\TextInput::make('sin')
                     ->required()
                     ->maxLength(15),
                 Forms\Components\DatePicker::make('dob')
+                    ->required()->label('Date of Birth'),
+                Forms\Components\Select::make('gender')
+                    ->options(['Male' => 'Male',
+                        'Female' => 'Female'])
                     ->required(),
                 Forms\Components\DatePicker::make('enrollment_date')
                     ->required(),
@@ -82,8 +81,11 @@ class StudentResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('program.title')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('full_name')
-                    ->label('Name')
+                Tables\Columns\TextColumn::make('first_name')
+                    ->label('First Name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('last_name')
+                    ->label('Last Name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.email')
                     ->label('Email Address'),
@@ -97,7 +99,7 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('nationality')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('cnic')
+                Tables\Columns\TextColumn::make('sin')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('dob')
