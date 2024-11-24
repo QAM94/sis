@@ -15,14 +15,15 @@ class CreateStudent extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        $pwd = env('STD_DEFAULT_PWD');
         $user = User::create([
             'name' => $data['first_name'].' '.$data['last_name'],
             'email' => env('STD_EMAIL_PREFIX').'_'.$data['reg_no'].'@'.env('STD_EMAIL_DOMAIN'),
-            'password' => Hash::make(env('STD_DEFAULT_PWD')), // Assuming 'password' is part of the form
+            'password' => Hash::make($pwd), // Assuming 'password' is part of the form
         ]);
         // Assign the "student" role to the user
         $user->assignRole('student');
-        Mail::to($data['email'])->send(new WelcomeUserMail($user->name, $user->email, $user->password));
+        Mail::to($data['email'])->send(new WelcomeUserMail($user->name, $user->email, $pwd));
 
         // Add the User ID to the Student data
         $data['user_id'] = $user->id;

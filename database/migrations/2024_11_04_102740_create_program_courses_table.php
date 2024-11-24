@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('program_id')->constrained()->onDelete('cascade');
             $table->foreignId('domain_id')->constrained()->onDelete('cascade');
             $table->foreignId('course_id')->constrained()->onDelete('cascade');
+            $table->integer('semester')->default(1);
             $table->integer('credits');
             $table->integer('credits_extra');
             $table->timestamps();

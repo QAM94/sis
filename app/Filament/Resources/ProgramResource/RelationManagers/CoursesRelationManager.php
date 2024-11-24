@@ -30,6 +30,8 @@ class CoursesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('pivot.domain_id')
                     ->label('Domain')
                     ->formatStateUsing(fn ($state) => Domain::find($state)?->title ?? 'N/A'),
+                Tables\Columns\TextColumn::make('pivot.semester')
+                    ->label('Semester'),
                 Tables\Columns\TextColumn::make('pivot.credits')
                     ->label('Credits'),
                 Tables\Columns\TextColumn::make('pivot.credits_extra')
@@ -53,6 +55,12 @@ class CoursesRelationManager extends RelationManager
                             ->label(''),
 
                         $action->getRecordSelect(),
+
+                        Forms\Components\TextInput::make('semester')
+                            ->required()
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(8),
 
                         Forms\Components\TextInput::make('credits')
                             ->required()

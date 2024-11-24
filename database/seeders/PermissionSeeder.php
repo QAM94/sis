@@ -14,8 +14,8 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $cases = ['create', 'read', 'update', 'delete'];
-        $modules = ['attendance', 'course', 'instructor', 'program', 'student', 'fee_voucher',
-            'schedule', 'transcript', 'notification', 'user'];
+        $modules = ['attendance', 'course', 'domain', 'instructor', 'program', 'student', 'fee_voucher',
+            'schedule', 'transcript', 'notification', 'role', 'user'];
         $permissions = [];
 
         foreach ($modules as $module) {
