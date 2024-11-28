@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('program_courses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('program_id')->constrained()->onDelete('cascade');
-            $table->foreignId('domain_id')->constrained()->onDelete('cascade');
-            $table->foreignId('course_id')->constrained()->onDelete('cascade');
-            $table->integer('semester')->default(1);
-            $table->integer('credits');
-            $table->integer('credits_extra');
+            $table->foreignId('program_id')->constrained()->onDelete('cascade'); // Reference to the programs table
+            $table->foreignId('domain_id')->constrained()->onDelete('cascade'); // Reference to the domains table
+            $table->foreignId('course_id')->constrained()->onDelete('cascade'); // Reference to the courses table
+            $table->integer('semester')->default(1); // Semester Number usually 1-8
+            $table->integer('credits'); // Default Course Credits
+            $table->integer('credits_extra'); // Extra Course Credits like labs
             $table->timestamps();
         });
     }

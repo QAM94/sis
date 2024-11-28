@@ -10,18 +10,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Program extends Model
 {
     use SoftDeletes;
+
     protected $fillable = ['type', 'title', 'description'];
 
-    public function student() : HasMany {
+    public function student(): HasMany
+    {
         return $this->hasMany(Student::class);
     }
 
-    public function programCourses() : HasMany
+    public function programCourses(): HasMany
     {
         return $this->hasMany(ProgramCourse::class);
     }
 
-    public function courses() : BelongsToMany
+    public function courses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, 'program_courses')
             ->withPivot('domain_id', 'semester', 'credits', 'credits_extra')

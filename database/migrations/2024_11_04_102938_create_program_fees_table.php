@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('program_fees', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('program_id')->constrained()->onDelete('cascade');
+            $table->foreignId('program_id')->constrained()->onDelete('cascade'); // Reference to the programs table
             $table->decimal('admission_fee', 8, 2);
             $table->decimal('security_deposit', 8, 2);
             $table->decimal('reg_fee', 8, 2);
