@@ -18,6 +18,9 @@ class StudentCourseResource extends Resource
     use HasResourcePermissions;
     protected static ?string $model = StudentCourse::class;
     protected static ?string $module = 'student_course';
+    protected static bool $shouldRegisterNavigation = false;
+
+
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

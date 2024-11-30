@@ -15,8 +15,17 @@ class OfferedCourse extends Model
         return $this->belongsTo(Program::class);
     }
 
+    public function programCourse()
+    {
+        return $this->belongsTo(ProgramCourse::class, 'program_course_id');
+    }
     public function timings(): HasMany
     {
-        return $this->HasMany(CourseTiming::class);
+        return $this->hasMany(CourseTiming::class, 'offered_course_id');
+    }
+
+    public function instructor(): BelongsTo
+    {
+        return $this->BelongsTo(Instructor::class);
     }
 }

@@ -29,7 +29,7 @@ class CoursesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('crn')->label('CRN'),
                 Tables\Columns\TextColumn::make('pivot.domain_id')
                     ->label('Domain')
-                    ->formatStateUsing(fn ($state) => Domain::find($state)?->title ?? 'N/A'),
+                    ->formatStateUsing(fn($state) => Domain::find($state)?->title ?? 'N/A'),
                 Tables\Columns\TextColumn::make('pivot.semester')
                     ->label('Semester'),
                 Tables\Columns\TextColumn::make('pivot.credits')

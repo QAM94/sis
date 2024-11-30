@@ -66,8 +66,12 @@ class ProgramResource extends Resource
                     ->attribute('type'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                // Custom Button Action
+                Tables\Actions\Action::make('offerCourses')
+                    ->label('Offer Courses')
+                    ->icon('heroicon-o-rectangle-stack')
+                    ->url(fn ($record) => route('filament.admin.resources.offered-courses.index', ['program_id' => $record->id]))
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -90,6 +94,7 @@ class ProgramResource extends Resource
             'create' => Pages\CreateProgram::route('/create'),
             'view' => Pages\ViewProgram::route('/{record}'),
             'edit' => Pages\EditProgram::route('/{record}/edit'),
+            'offerCourses' => \App\Filament\Resources\OfferedCourseResource\Pages\CreateOfferedCourse::route('/create/{record}')
         ];
     }
 }

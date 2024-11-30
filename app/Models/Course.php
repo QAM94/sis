@@ -31,6 +31,11 @@ class Course extends Model
             ->withTimestamps();
     }
 
+    public function programCourses()
+    {
+        return $this->hasMany(ProgramCourse::class, 'course_id');
+    }
+
     public function coursesList()
     {
         return $this->select(DB::raw('CONCAT(crn, "-", title) as course_name'))->get();

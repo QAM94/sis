@@ -11,4 +11,9 @@ class ProgramFee extends Model
 
     protected $fillable = ['program_id', 'admission_fee', 'security_deposit', 'reg_fee',
         'tution_fee', 'transport_fee', 'other_fee', 'fee_by'];
+
+    public function program()
+    {
+        return $this->belongsTo(Program::class);
+    }
 }
