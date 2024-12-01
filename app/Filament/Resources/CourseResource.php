@@ -10,11 +10,11 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 
 class CourseResource extends Resource
 {
     use HasResourcePermissions;
+
     protected static ?string $model = Course::class;
     protected static ?string $module = 'course';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

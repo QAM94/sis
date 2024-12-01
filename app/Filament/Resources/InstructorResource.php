@@ -15,6 +15,7 @@ use Filament\Tables\Table;
 class InstructorResource extends Resource
 {
     use HasResourcePermissions;
+
     protected static ?string $model = Instructor::class;
     protected static ?string $module = 'instructor';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

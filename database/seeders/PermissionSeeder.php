@@ -16,7 +16,7 @@ class PermissionSeeder extends Seeder
         $cases = ['create', 'read', 'update', 'delete'];
         $modules = ['attendance', 'course', 'domain', 'instructor', 'program', 'student', 'fee_voucher',
             'schedule', 'transcript', 'notification', 'role', 'user', 'offered_course', 'course_timing',
-            'student_course'];
+            'student_enrollment'];
         $permissions = [];
 
         foreach ($modules as $module) {
@@ -24,6 +24,7 @@ class PermissionSeeder extends Seeder
                 $permissions[] = $module . '-' . $case;
             }
         }
+        $permissions[] = 'offered_course-register';
 
         // Create permissions in the database
         foreach ($permissions as $permission) {

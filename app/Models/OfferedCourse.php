@@ -19,6 +19,7 @@ class OfferedCourse extends Model
     {
         return $this->belongsTo(ProgramCourse::class, 'program_course_id');
     }
+
     public function timings(): HasMany
     {
         return $this->hasMany(CourseTiming::class, 'offered_course_id');

@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 class DomainResource extends Resource
 {
     use HasResourcePermissions;
+
     protected static ?string $model = Domain::class;
     protected static ?string $module = 'domain';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

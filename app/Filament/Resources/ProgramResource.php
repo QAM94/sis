@@ -15,6 +15,7 @@ use Filament\Tables\Table;
 class ProgramResource extends Resource
 {
     use HasResourcePermissions;
+
     protected static ?string $model = Program::class;
     protected static ?string $module = 'program';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -71,7 +72,7 @@ class ProgramResource extends Resource
                 Tables\Actions\Action::make('offerCourses')
                     ->label('Offer Courses')
                     ->icon('heroicon-o-rectangle-stack')
-                    ->url(fn ($record) => route('filament.admin.resources.offered-courses.index', ['program_id' => $record->id]))
+                    ->url(fn($record) => route('filament.admin.resources.offered-courses.index', ['program_id' => $record->id]))
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

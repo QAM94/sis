@@ -2,33 +2,30 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\RoleResource\Pages;
+use App\Filament\Resources\StudentEnrollmentResource\Pages;
 use App\Filament\Traits\HasResourcePermissions;
+use App\Models\StudentEnrollment;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 
-class RoleResource extends Resource
+class StudentEnrollmentResource extends Resource
 {
     use HasResourcePermissions;
 
-    protected static ?string $model = \Spatie\Permission\Models\Role::class;
-    protected static ?string $module = 'role';
+    protected static ?string $model = StudentEnrollment::class;
+    protected static ?string $module = 'student_enrollment';
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required(),
-                Forms\Components\Select::make('permissions')
-                    ->relationship('permissions', 'name')
-                    ->multiple()
-                    ->required(),
+                //
             ]);
     }
 
@@ -36,20 +33,17 @@ class RoleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Role Name'),
-                Tables\Columns\TextColumn::make('permissions.name')
-                    ->label('Permissions')
-                    ->getStateUsing(function ($record) {
-                        return $record->permissions->pluck('name')->join(', ');
-                    }),
+                //
             ])
             ->filters([
+                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -64,8 +58,9 @@ class RoleResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRoles::route('/'),
-            'edit' => Pages\EditRole::route('/{record}/edit'),
+            'index' => Pages\ListStudentEnrollments::route('/'),
+            'create' => Pages\CreateStudentEnrollment::route('/create'),
+            'edit' => Pages\EditStudentEnrollment::route('/{record}/edit'),
         ];
     }
 }

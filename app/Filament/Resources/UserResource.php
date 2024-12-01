@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 class UserResource extends Resource
 {
     use HasResourcePermissions;
+
     protected static ?string $model = User::class;
     protected static ?string $module = 'user';
 
@@ -51,7 +52,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('M d, Y')->sortable(),
                 Tables\Columns\TextColumn::make('roles.name')
-                ->label('Roles')
+                    ->label('Roles')
                     ->badge() // Adds a badge style
                     ->sortable(), // Limits to 3 roles in the list
             ])

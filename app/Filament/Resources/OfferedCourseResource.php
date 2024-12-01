@@ -16,10 +16,10 @@ use Filament\Tables\Table;
 class OfferedCourseResource extends Resource
 {
     use HasResourcePermissions;
+
     protected static ?string $model = OfferedCourse::class;
     protected static ?string $module = 'offered_course';
     protected static bool $shouldRegisterNavigation = false;
-
 
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -29,7 +29,7 @@ class OfferedCourseResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Hidden::make('program_id')
-                    ->default(fn () => request()->get('program_id')) // Dynamically set default from URL
+                    ->default(fn() => request()->get('program_id')) // Dynamically set default from URL
                     ->required(),
                 Forms\Components\Select::make('instructor_id')
                     ->relationship('instructor', 'full_name')
@@ -103,6 +103,7 @@ class OfferedCourseResource extends Resource
         return [
             'index' => Pages\ListOfferedCourses::route('/'),
             'create' => Pages\CreateOfferedCourse::route('/create'),
+            'register' => Pages\OfferedCourses::route('/register'),
             'edit' => Pages\EditOfferedCourse::route('/{record}/edit'),
         ];
     }

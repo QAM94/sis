@@ -10,16 +10,14 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CourseTimingResource extends Resource
 {
     use HasResourcePermissions;
+
     protected static ?string $model = CourseTiming::class;
     protected static ?string $module = 'course_timing';
     protected static bool $shouldRegisterNavigation = false;
-
 
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
