@@ -100,24 +100,4 @@ class TimingsRelationManager extends RelationManager
                 ]),
             ]);
     }
-
-    /*protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        // Extract the days from the form data
-        $days = $data['day'];
-        unset($data['day']); // Remove `day` to avoid saving it as JSON
-
-        foreach ($days as $day) {
-            // Create a separate record for each day
-            \App\Models\CourseTiming::create([
-                'offered_course_id' => $data['offered_course_id'], // Replace with actual offered_course_id
-                'day' => $day,
-                'start_time' => $data['start_time'],
-                'end_time' => $data['end_time'],
-            ]);
-        }
-
-        // Prevent saving in the default way since we manually created records
-        return [];
-    }*/
 }

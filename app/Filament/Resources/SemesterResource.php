@@ -45,6 +45,18 @@ class SemesterResource extends Resource
                 Forms\Components\DatePicker::make('reg_lock_at')
                     ->required()
                     ->label('Registration End'),
+                Forms\Components\TextInput::make('min_courses')
+                    ->numeric()
+                    ->minValue(1)
+                    ->maxValue(6)
+                    ->required()
+                    ->label('Minimum Courses Required'),
+                Forms\Components\TextInput::make('max_courses')
+                    ->numeric()
+                    ->minValue(1)
+                    ->maxValue(6)
+                    ->required()
+                    ->label('Maximum Courses Allowed'),
             ]);
     }
 
@@ -72,6 +84,10 @@ class SemesterResource extends Resource
                 Tables\Columns\TextColumn::make('reg_lock_at')
                     ->label('Registration End')
                     ->date(),
+                Tables\Columns\TextColumn::make('min_courses')
+                    ->label('Min Courses'),
+                Tables\Columns\TextColumn::make('max_courses')
+                    ->label('Max Courses'),
             ])
             ->filters([
                 //

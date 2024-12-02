@@ -9,5 +9,6 @@ class Semester extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['type', 'year', 'start_date', 'end_date', 'reg_begin_at', 'reg_lock_at'];
+    protected $fillable = ['type', 'year', 'start_date', 'end_date', 'reg_begin_at', 'reg_lock_at',
+        'min_courses', 'max_courses'];
 }

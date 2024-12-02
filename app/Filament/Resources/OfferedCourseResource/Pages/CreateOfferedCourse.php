@@ -24,10 +24,9 @@ class CreateOfferedCourse extends CreateRecord
     {
         // Check if a record with the same combination exists
         $exists = \App\Models\OfferedCourse::where([
+            'semester_id' => $data['semester_id'],
             'instructor_id' => $data['instructor_id'],
-            'program_course_id' => $data['program_course_id'],
-            'type' => $data['type'],
-            'year' => $data['year'],
+            'program_course_id' => $data['program_course_id']
         ])->exists();
 
         if ($exists) {

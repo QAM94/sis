@@ -61,7 +61,7 @@ class AdminPanelProvider extends PanelProvider
             ->authGuard('web')
             ->navigationItems([
                 NavigationItem::make('Course Registration')
-                    ->visible(fn(): bool => auth()->user()->can('offered_course-register'))
+                    ->visible(fn(): bool => auth()->user()->hasRole('student'))
                     ->url(fn (): string => OfferedCourses::getUrl())
                     ->icon('heroicon-o-presentation-chart-line')
             ]);

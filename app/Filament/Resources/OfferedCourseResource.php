@@ -7,6 +7,7 @@ use App\Filament\Resources\OfferedCourseResource\RelationManagers;
 use App\Filament\Traits\HasResourcePermissions;
 use App\Models\OfferedCourse;
 use App\Models\ProgramCourse;
+use App\Models\Semester;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -31,6 +32,22 @@ class OfferedCourseResource extends Resource
                 Forms\Components\Hidden::make('program_id')
                     ->default(fn() => request()->get('program_id')) // Dynamically set default from URL
                     ->required(),
+                Forms\Components\Select::make('semester_id')
+                    ->options(function () {
+                        return Semester::where('start_date', '>', date('Y-m-d'))
+                            ->get()
+                            ->mapWithKeys(function ($semester) {
+                                return [$semester->id => "{$semester->type} {$semester->year}"];
+                            });
+                    })
+                    ->default(function () {
+                        $firstSemester = Semester::where('start_date', '>', date('Y-m-d'))
+                            ->orderBy('start_date', 'asc') // Ensure the first option matches the dropdown
+                            ->first();
+                        return $firstSemester?->id; // Automatically set the ID of the first option
+                    })
+                    ->required()
+                    ->label('Semester'),
                 Forms\Components\Select::make('instructor_id')
                     ->relationship('instructor', 'full_name')
                     ->reactive()
@@ -54,16 +71,7 @@ class OfferedCourseResource extends Resource
                     })
                     ->searchable()
                     ->preload()
-                    ->required(),
-                Forms\Components\Select::make('type')
-                    ->options(['Spring' => 'Spring', 'Summer' => 'Summer', 'Fall' => 'Fall'])
-                    ->required(),
-                Forms\Components\Select::make('year')
-                    ->options([
-                        date('Y') => date('Y'), // Current year
-                        date('Y', strtotime('+1 year')) => date('Y', strtotime('+1 year')) // Next year
-                    ])
-                    ->required(),
+                    ->required()
             ]);
     }
 
@@ -71,15 +79,24 @@ class OfferedCourseResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('program.title')->label('Program'),
+                Tables\Columns\TextColumn::make('semester')
+                    ->label('Semester')
+                    ->formatStateUsing(function ($record) {
+                        return "{$record->semester->type} {$record->semester->year}";
+                    }),
                 Tables\Columns\TextColumn::make('programCourse.course.title')->label('Course'),
                 Tables\Columns\TextColumn::make('instructor.full_name')->label('Instructor'),
-                Tables\Columns\TextColumn::make('type')->label('Semester'),
-                Tables\Columns\TextColumn::make('year')->label('Year'),
+                Tables\Columns\TextColumn::make('timings')
+                    ->label('Timings')
+                    ->formatStateUsing(function ($record) {
+                        return $record->timings->map(function ($timing) {
+                            return "<li>{$timing->day}: {$timing->start_time} - {$timing->end_time}</li>";
+                        })->join('');
+                    })
+                    ->html() // Enable HTML rendering for this column
+                    ->wrap() // Optional: Wrap the content for better display in the table
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('type')->label('Semester Type'),
-                Tables\Filters\SelectFilter::make('year')->label('Year'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
