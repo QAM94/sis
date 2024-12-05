@@ -4,6 +4,8 @@ namespace App\Filament\Resources\OfferedCourseResource\Pages;
 
 use App\Filament\Resources\OfferedCourseResource;
 use App\Models\OfferedCourse;
+use App\Models\PaymentVoucher;
+use App\Models\ProgramFee;
 use App\Models\Semester;
 use App\Models\StudentEnrollment;
 use App\Models\StudentEnrollmentDetail;
@@ -28,7 +30,7 @@ class OfferedCourses extends ListRecords
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
-    protected $student, $currentSemester, $enrolledCourseCount;
+    protected $student, $currentSemester, $enrolledCourseCount, $whereArr;
 
     public function __construct()
     {
@@ -38,10 +40,12 @@ class OfferedCourses extends ListRecords
             ->first();
 
         if ($this->student && $this->currentSemester) {
+            $this->whereArr = ['student_id' => $this->student->id, 'semester_id' => $this->currentSemester->id];
             $this->enrolledCourseCount = StudentEnrollmentDetail::whereHas('studentEnrollment', function ($query) {
-                $query->where(['student_id' => $this->student->id, 'semester_id' => $this->currentSemester->id]);
+                $query->where($this->whereArr);
             })->where('status', 'Enrolled')->count();
         } else {
+            $this->whereArr = [];
             $this->enrolledCourseCount = 0; // Default to zero if conditions aren't met
         }
     }
@@ -135,10 +139,53 @@ class OfferedCourses extends ListRecords
 
     protected function getTableHeaderActions(): array
     {
-        return [
+        $voucherExists = PaymentVoucher::whereHas('studentEnrollment',
+            function ($query) {
+                $query->where($this->whereArr);
+            })->exists();
 
+        return [
+            // Generate Voucher Button
+            Tables\Actions\Action::make('lock_registration')
+                ->label('Lock Registration')
+                ->icon('heroicon-o-document-text')
+                ->action(function () {
+                    $this->lockRegistration();
+                    $this->redirect(static::class);
+                })
+                ->visible(function () use ($voucherExists) {
+                    $selectedCoursesCount = StudentEnrollmentDetail::whereHas('studentEnrollment',
+                        function ($query) {
+                            $query->where($this->whereArr);
+                        })->where('status', 'Enrolled')->count();
+
+                    // Show Generate button if minimum courses are met and voucher doesn't exist
+                    return !$voucherExists && $selectedCoursesCount >= $this->currentSemester->min_courses;
+                }),
+
+            // Download Voucher Button
+            Tables\Actions\Action::make('download_voucher')
+                ->label('Download Payment Voucher')
+                ->icon('heroicon-o-document-text')
+                ->url(function () {
+                    $voucher = PaymentVoucher::whereHas('studentEnrollment',
+                        function ($query) {
+                            $query->where('student_id', $this->student->id);
+                        })->where('status', 'Pending')->first();
+
+                    if ($voucher) {
+                        return route('voucher.download', ['voucher' => $voucher->id]); // Route to handle download
+                    }
+
+                    return '#';
+                })
+                ->visible(function () use ($voucherExists) {
+                    // Show Download button only if voucher exists
+                    return $voucherExists;
+                }),
         ];
     }
+
 
     protected function getTableBulkActions(): array
     {
@@ -157,12 +204,9 @@ class OfferedCourses extends ListRecords
                 $query->where('program_course_id', $offeredCourse->program_course_id);
             })->exists();
 
-        if(!$isRegistered) {
+        if (!$isRegistered) {
             // Create or find the enrollment record
-            $enrollment = StudentEnrollment::firstOrCreate([
-                'student_id' => $this->student->id,
-                'semester_id' => $this->currentSemester->id,
-            ]);
+            $enrollment = StudentEnrollment::firstOrCreate($this->whereArr);
 
             // Add course to enrollment details
             StudentEnrollmentDetail::updateOrCreate([
@@ -180,8 +224,7 @@ class OfferedCourses extends ListRecords
                 ->title('Course added successfully!')
                 ->success()
                 ->send();
-        }
-        else {
+        } else {
             Notification::make()
                 ->title('Course already registered!')
                 ->danger()
@@ -217,9 +260,42 @@ class OfferedCourses extends ListRecords
     public function checkifCourseExists($offeredCourseId)
     {
         return StudentEnrollmentDetail::whereHas('studentEnrollment', function ($query) {
-            $query->where(['student_id' => $this->student->id, 'semester_id' => $this->currentSemester->id]);
+            $query->where($this->whereArr);
         })->where(['offered_course_id' => $offeredCourseId, 'status' => 'Enrolled'])->exists();
     }
 
+    public function lockRegistration()
+    {
+        $enrollment = StudentEnrollment::where($this->whereArr)->where('status', 'Draft')->first();
+        if(empty($enrollment)) {
+            Notification::make()
+                ->title('Enrollment Not Found')
+                ->danger()
+                ->send();
+            return;
+        }
+        $enrollment->status = 'Locked';
+        $enrollment->save();
+        $enrolledCourses = StudentEnrollmentDetail::whereHas('studentEnrollment', function ($query) {
+            $query->where($this->whereArr);
+        })->where('status', 'Enrolled')->with('offeredCourse.programCourse')->get();
+
+        // Your logic to calculate fees and generate voucher
+        $semesterFee = ProgramFee::getSemesterFee($this->student, $enrolledCourses);
+
+        // Save the payment voucher
+        PaymentVoucher::create([
+            'enrollment_id' => $enrollment->id,
+            'total_amount' => $semesterFee['total'],
+            'fee_breakdown' => json_encode($semesterFee['breakdown']),
+            'status' => 'Pending',
+        ]);
+
+        // Notify the user
+        Notification::make()
+            ->title('Registration Locked and Payment Voucher Generated Successfully!')
+            ->success()
+            ->send();
+    }
 
 }
