@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProgramFeeResource\Pages;
-use App\Filament\Resources\ProgramFeeResource\RelationManagers;
 use App\Filament\Traits\HasResourcePermissions;
 use App\Models\ProgramFee;
 use Filament\Forms;
@@ -11,8 +10,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ProgramFeeResource extends Resource
 {
@@ -20,8 +17,7 @@ class ProgramFeeResource extends Resource
     protected static ?string $model = ProgramFee::class;
     protected static ?string $module = 'program_fee';
     protected static ?string $currency = 'cad';
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Fees Management';
 
     public static function form(Form $form): Form
     {

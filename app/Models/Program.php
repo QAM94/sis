@@ -13,14 +13,19 @@ class Program extends Model
 
     protected $fillable = ['type', 'title', 'description'];
 
-    public function student(): HasMany
+    public function students(): BelongsToMany
     {
-        return $this->hasMany(Student::class);
+        return $this->belongsToMany(Student::class, 'student_programs');
     }
 
     public function programCourses(): HasMany
     {
         return $this->hasMany(ProgramCourse::class);
+    }
+
+    public function studentPrograms(): HasMany
+    {
+        return $this->hasMany(StudentProgram::class);
     }
 
     public function courses(): BelongsToMany

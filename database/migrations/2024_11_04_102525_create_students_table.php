@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Reference to the users table
-            $table->foreignId('program_id')->constrained()->onDelete('cascade'); // Reference to the programs table
             $table->string('reg_no')->unique();
             $table->string('first_name');
             $table->string('last_name');
@@ -26,8 +25,7 @@ return new class extends Migration
             $table->string('nationality');
             $table->string('sin');
             $table->date('dob');
-            $table->date('enrollment_date');
-            $table->enum('status', ['Enrolled', 'Completed', 'Suspended', 'Withdrawn']);
+            $table->enum('status', ['Active', 'In Active']);
             $table->timestamps();
             $table->softDeletes();
         });

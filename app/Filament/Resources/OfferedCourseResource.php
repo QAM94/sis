@@ -5,9 +5,10 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OfferedCourseResource\Pages;
 use App\Filament\Resources\OfferedCourseResource\RelationManagers;
 use App\Filament\Traits\HasResourcePermissions;
+use App\Models\Instructor;
 use App\Models\OfferedCourse;
+use App\Models\Program;
 use App\Models\ProgramCourse;
-use App\Models\Semester;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -29,48 +30,57 @@ class OfferedCourseResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Hidden::make('program_id')
-                    ->default(fn() => request()->get('program_id')) // Dynamically set default from URL
+                Forms\Components\Hidden::make('semester_id')
+                    ->default(fn() => request()->get('semester_id')) // Dynamically set default from URL
                     ->required(),
-                Forms\Components\Select::make('semester_id')
+                Forms\Components\Select::make('program_id')
                     ->options(function () {
-                        return Semester::where('start_date', '>', date('Y-m-d'))
-                            ->get()
-                            ->mapWithKeys(function ($semester) {
-                                return [$semester->id => "{$semester->type} {$semester->year}"];
+                        return Program::all()
+                            ->mapWithKeys(function ($program) {
+                                return [$program->id => $program->title];
                             });
                     })
-                    ->default(function () {
-                        $firstSemester = Semester::where('start_date', '>', date('Y-m-d'))
-                            ->orderBy('start_date', 'asc') // Ensure the first option matches the dropdown
-                            ->first();
-                        return $firstSemester?->id; // Automatically set the ID of the first option
-                    })
-                    ->required()
-                    ->label('Semester'),
-                Forms\Components\Select::make('instructor_id')
-                    ->relationship('instructor', 'full_name')
                     ->reactive()
-                    ->required(),
+                    ->required()
+                    ->searchable()
+                    ->label('Program'),
+
                 Forms\Components\Select::make('program_course_id')
                     ->label('Courses')
                     ->options(function (callable $get) {
-                        $programId = $get('program_id'); // Get program_id from the field
-                        $instructorId = $get('instructor_id'); // Get instructor_id from the field
-                        if ($programId && $instructorId) {
+                        $programId = $get('program_id'); // Get selected program
+                        if ($programId) {
                             return ProgramCourse::where('program_id', $programId)
-                                ->whereHas('course.instructors', function ($query) use ($instructorId) {
-                                    $query->where('instructors.id', $instructorId);
-                                })
                                 ->get()
                                 ->mapWithKeys(function ($programCourse) {
-                                    return [$programCourse->id => $programCourse->course->title]; // Access course title via relationship
+                                    return [$programCourse->id => $programCourse->course->title]; // Map courses
+                                });
+                        }
+                        return [];
+                    })
+                    ->reactive()
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                // Instructors Selector (Filtered by Course)
+                Forms\Components\Select::make('instructor_id')
+                    ->label('Instructors')
+                    ->options(function (callable $get) {
+                        $programCourseId = $get('program_course_id'); // Get selected program_course_id
+                        if ($programCourseId) {
+                            $programCourse = ProgramCourse::find($programCourseId);
+                            return Instructor::whereHas('courses', function ($query) use ($programCourse) {
+                                $query->where('courses.id', $programCourse->course_id); // Match the course_id with program_course_id
+                            })->get()
+                                ->mapWithKeys(function ($instructor) {
+                                    return [$instructor->id => $instructor->full_name]; // Map instructors
                                 });
                         }
                         return [];
                     })
                     ->searchable()
                     ->preload()
+                    ->reactive()
                     ->required()
             ]);
     }
@@ -79,11 +89,7 @@ class OfferedCourseResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('semester')
-                    ->label('Semester')
-                    ->formatStateUsing(function ($record) {
-                        return "{$record->semester->type} {$record->semester->year}";
-                    }),
+                Tables\Columns\TextColumn::make('programCourse.program.title')->label('Program'),
                 Tables\Columns\TextColumn::make('programCourse.course.title')->label('Course'),
                 Tables\Columns\TextColumn::make('instructor.full_name')->label('Instructor'),
                 Tables\Columns\TextColumn::make('timings')
@@ -97,6 +103,11 @@ class OfferedCourseResource extends Resource
                     ->wrap() // Optional: Wrap the content for better display in the table
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('Program')
+                    ->options(Program::all()->pluck('title', 'id')->toArray())
+                    ->searchable()
+                    ->placeholder('All Programs')
+                    ->attribute('program_id')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

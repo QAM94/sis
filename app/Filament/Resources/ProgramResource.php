@@ -18,7 +18,7 @@ class ProgramResource extends Resource
 
     protected static ?string $model = Program::class;
     protected static ?string $module = 'program';
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Curriculum Management';
 
     public static function form(Form $form): Form
     {
@@ -68,11 +68,6 @@ class ProgramResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                // Custom Button Action
-                Tables\Actions\Action::make('offerCourses')
-                    ->label('Offer Courses')
-                    ->icon('heroicon-o-rectangle-stack')
-                    ->url(fn($record) => route('filament.admin.resources.offered-courses.index', ['program_id' => $record->id]))
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

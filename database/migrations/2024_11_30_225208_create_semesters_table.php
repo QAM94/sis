@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('reg_begin_at');
             $table->date('reg_lock_at');
             $table->tinyInteger('min_courses');
-            $table->tinyInteger('max_courses');
+            $table->tinyInteger('max_courses')->default(99);
             $table->timestamps();
             $table->softDeletes();
         });

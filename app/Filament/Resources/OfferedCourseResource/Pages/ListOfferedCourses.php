@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\OfferedCourseResource\Pages;
 
 use App\Filament\Resources\OfferedCourseResource;
+use App\Models\Semester;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -15,16 +16,18 @@ class ListOfferedCourses extends ListRecords
         return [
             Actions\CreateAction::make()
                 ->url(fn () => route('filament.admin.resources.offered-courses.create',
-                    ['program_id' => request()->get('program_id')]))
-                ->mutateFormDataUsing(fn (array $data) => array_merge($data, ['program_id' => request()->get('program_id')])),
+                    ['semester_id' => request()->get('semester_id')]))
+                ->mutateFormDataUsing(fn (array $data) => array_merge($data, ['semester_id' => request()->get('semester_id')])),
         ];
     }
 
     public function getTitle(): string
     {
-        $programId = request()->get('program_id');
-        $programTitle = \App\Models\Program::find($programId)?->title ?? 'All Programs';
-
-        return "Offered Courses for: {$programTitle}";
+        $semesterId = request()->get('semester_id');
+        $semester = Semester::find($semesterId);
+        if(!empty($semester)) {
+            return "Offered Courses for: $semester->type $semester->year";
+        }
+        return "Offered Courses";
     }
 }

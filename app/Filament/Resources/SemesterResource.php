@@ -17,8 +17,7 @@ class SemesterResource extends Resource
 
     protected static ?string $model = Semester::class;
     protected static ?string $module = 'semester';
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Semester Management';
 
     public static function form(Form $form): Form
     {
@@ -54,9 +53,10 @@ class SemesterResource extends Resource
                 Forms\Components\TextInput::make('max_courses')
                     ->numeric()
                     ->minValue(1)
-                    ->maxValue(6)
+                    ->maxValue(99)
                     ->required()
-                    ->label('Maximum Courses Allowed'),
+                    ->label('Maximum Courses Allowed')
+                    ->helperText('Enter 99 if unlimited'),
             ]);
     }
 
@@ -84,16 +84,17 @@ class SemesterResource extends Resource
                 Tables\Columns\TextColumn::make('reg_lock_at')
                     ->label('Registration End')
                     ->date(),
-                Tables\Columns\TextColumn::make('min_courses')
-                    ->label('Min Courses'),
-                Tables\Columns\TextColumn::make('max_courses')
-                    ->label('Max Courses'),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                // Custom Button Action
+                Tables\Actions\Action::make('offerCourses')
+                    ->label('Offer Courses')
+                    ->icon('heroicon-o-rectangle-stack')
+                    ->url(fn($record) => route('filament.admin.resources.offered-courses.index', ['semester_id' => $record->id]))
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

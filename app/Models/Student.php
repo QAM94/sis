@@ -5,15 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'program_id', 'reg_no', 'first_name', 'last_name', 'contact', 'email',
-        'address', 'postcode', 'nationality', 'sin', 'dob', 'gender', 'enrollment_date'];
+    protected $fillable = ['user_id', 'reg_no', 'first_name', 'last_name', 'contact', 'email',
+        'address', 'postcode', 'nationality', 'sin', 'dob', 'gender'];
 
+    public function programs(): BelongsToMany
+    {
+        return $this->belongsToMany(Program::class, 'student_programs');
+    }
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -22,6 +27,11 @@ class Student extends Model
     public function program(): BelongsTo
     {
         return $this->belongsTo(Program::class);
+    }
+
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(StudentEnrollment::class);
     }
 
     public function programCourses(): BelongsToMany

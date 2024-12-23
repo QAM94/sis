@@ -17,19 +17,19 @@ class StudentResource extends Resource
 
     protected static ?string $model = Student::class;
     protected static ?string $module = 'student';
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'User Management';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('program_id')
-                    ->relationship('program', 'title')
+                Forms\Components\Select::make('programs')
+                    ->relationship('programs', 'title')
+                    ->multiple()->preload()
                     ->required(),
                 Forms\Components\TextInput::make('reg_no')
                     ->required()
-                    ->numeric()
-                    ->unique(),
+                    ->numeric(),
                 Forms\Components\TextInput::make('first_name')
                     ->required()
                     ->maxLength(50),
@@ -60,8 +60,6 @@ class StudentResource extends Resource
                     ->options(['Male' => 'Male',
                         'Female' => 'Female'])
                     ->required(),
-                Forms\Components\DatePicker::make('enrollment_date')
-                    ->required(),
                 Forms\Components\Select::make('status')
                     ->options(['Enrolled' => 'Enrolled',
                         'Completed' => 'Completed',
@@ -78,8 +76,6 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('reg_no')
                     ->label('Reg ID')
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('program.title')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('first_name')
                     ->label('First Name')
@@ -104,10 +100,6 @@ class StudentResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('dob')
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('enrollment_date')
-                    ->label('Enrolled On')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status'),

@@ -17,7 +17,8 @@ class RoleResource extends Resource
 
     protected static ?string $model = \Spatie\Permission\Models\Role::class;
     protected static ?string $module = 'role';
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'User Management';
+    protected static ?string $navigationLabel = 'User Roles';
 
     public static function form(Form $form): Form
     {

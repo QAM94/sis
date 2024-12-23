@@ -6,6 +6,7 @@ use App\Filament\Resources\OfferedCourseResource\Pages\OfferedCourses;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
@@ -33,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->sidebarWidth('12rem')
+            ->sidebarWidth('14rem')
             ->sidebarCollapsibleOnDesktop()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -64,6 +65,20 @@ class AdminPanelProvider extends PanelProvider
                     ->visible(fn(): bool => auth()->user()->hasRole('student'))
                     ->url(fn (): string => OfferedCourses::getUrl())
                     ->icon('heroicon-o-presentation-chart-line')
+            ])
+            ->navigationGroups([
+                NavigationGroup::make()
+                    ->label('User Management')
+                    ->icon('heroicon-o-user-group'),
+                NavigationGroup::make()
+                    ->label('Curriculum Management')
+                    ->icon('heroicon-o-rectangle-stack'),
+                NavigationGroup::make()
+                    ->label('Semester Management')
+                    ->icon('heroicon-o-calendar-date-range'),
+                NavigationGroup::make()
+                    ->label('Fees Management')
+                    ->icon('heroicon-o-currency-dollar'),
             ]);
     }
 }
