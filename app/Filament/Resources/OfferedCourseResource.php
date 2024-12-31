@@ -131,7 +131,7 @@ class OfferedCourseResource extends Resource
         return [
             'index' => Pages\ListOfferedCourses::route('/'),
             'create' => Pages\CreateOfferedCourse::route('/create'),
-            'register' => Pages\OfferedCourses::route('/register'),
+            'register' => Pages\OfferedCourses::route('/{program_id}/register'),
             'edit' => Pages\EditOfferedCourse::route('/{record}/edit'),
         ];
     }

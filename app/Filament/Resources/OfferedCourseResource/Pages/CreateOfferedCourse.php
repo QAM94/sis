@@ -3,21 +3,21 @@
 namespace App\Filament\Resources\OfferedCourseResource\Pages;
 
 use App\Filament\Resources\OfferedCourseResource;
-use App\Models\OfferedCourse;
-use Filament\Actions;
+use App\Models\Semester;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Validation\ValidationException;
 
 class CreateOfferedCourse extends CreateRecord
 {
     protected static string $resource = OfferedCourseResource::class;
     public function getTitle(): string
     {
-        $programId = request()->get('program_id');
-        $programTitle = \App\Models\Program::find($programId)?->title ?? 'All Programs';
-
-        return "Offer Course for: {$programTitle}";
+        $semesterId = request()->get('semester_id');
+        $semester = Semester::find($semesterId);
+        if(!empty($semester)) {
+            return "Offered Courses for: $semester->type $semester->year";
+        }
+        return "Offered Courses";
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array

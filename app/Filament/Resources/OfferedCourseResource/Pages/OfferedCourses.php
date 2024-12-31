@@ -5,6 +5,7 @@ namespace App\Filament\Resources\OfferedCourseResource\Pages;
 use App\Filament\Resources\OfferedCourseResource;
 use App\Models\OfferedCourse;
 use App\Models\PaymentVoucher;
+use App\Models\Program;
 use App\Models\ProgramFee;
 use App\Models\Semester;
 use App\Models\StudentEnrollment;
@@ -12,9 +13,9 @@ use App\Models\StudentEnrollmentDetail;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables;
+use Filament\Tables\Concerns\InteractsWithTable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use Filament\Tables\Concerns\InteractsWithTable;
 
 class OfferedCourses extends ListRecords
 {
@@ -30,20 +31,22 @@ class OfferedCourses extends ListRecords
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
-    protected $student, $currentSemester, $enrolledCourseCount, $whereArr;
+    public $student, $currentSemester, $program_id, $whereArr, $enrolledCourseCount;
 
     public function __construct()
     {
+        $this->program_id = (int)request()->program_id;
         $this->student = Auth::user()->student ?? null;
-        $this->currentSemester = Semester::whereDate('reg_begin_at', '<=', now())
-            ->where('reg_lock_at', '>=', now())
-            ->first();
+        $this->currentSemester = Semester::getCurrentSemester();
 
-        if ($this->student && $this->currentSemester) {
-            $this->whereArr = ['student_id' => $this->student->id, 'semester_id' => $this->currentSemester->id];
-            $this->enrolledCourseCount = StudentEnrollmentDetail::whereHas('studentEnrollment', function ($query) {
-                $query->where($this->whereArr);
-            })->where('status', 'Enrolled')->count();
+        if ($this->student && $this->currentSemester&& $this->program_id) {
+            $this->whereArr = ['student_id' => $this->student->id,
+                'program_id' => $this->program_id,
+                'semester_id' => $this->currentSemester->id];
+            $this->enrolledCourseCount = StudentEnrollmentDetail::whereHas('studentEnrollment',
+                function ($query) {
+                    $query->where($this->whereArr);
+                })->where('status', 'Enrolled')->count();
         } else {
             $this->whereArr = [];
             $this->enrolledCourseCount = 0; // Default to zero if conditions aren't met
@@ -52,21 +55,26 @@ class OfferedCourses extends ListRecords
 
     public function getTitle(): string
     {
+        $title ="Course Registration";
+        if ($this->program_id) {
+            $program = Program::find($this->program_id);
+            $title .= ': '.$program->title;
+        }
         if ($this->currentSemester) {
-            return "Course Registration: {$this->currentSemester->type} {$this->currentSemester->year}";
+            $title .= ' - '.$this->currentSemester->type.' '.$this->currentSemester->year;
         }
 
-        return "Course Registration";
+        return $title;
     }
 
     protected function getTableQuery(): ?Builder
     {
-        if (!$this->student || !$this->currentSemester) {
+        if (!$this->student || !$this->currentSemester|| !$this->program_id) {
             return OfferedCourse::query()->limit(0);
         }
         return OfferedCourse::query()
             ->with(['program', 'programCourse.course', 'instructor', 'timings'])
-            ->where('program_id', $this->student->program_id)
+            ->where('program_id', $this->program_id)
             ->where('semester_id', $this->currentSemester->id)
             ->whereDoesntHave('studentEnrollments', function ($query) {
                 $query->where('student_id', $this->student->id)
@@ -116,7 +124,8 @@ class OfferedCourses extends ListRecords
                 ->icon('heroicon-o-plus-circle')
                 ->action(function ($record) {
                     $this->enrollInCourse($record->id);
-                    $this->redirect(static::class);
+                    $this->redirect(route('filament.admin.resources.offered-courses.register',
+                        ['program_id' => $record->program_id]));
                 })
                 ->visible(function ($record) {
                     return (!$this->checkifCourseExists($record->id) &&
@@ -128,7 +137,8 @@ class OfferedCourses extends ListRecords
                 ->icon('heroicon-o-x-circle')
                 ->action(function ($record) {
                     $this->dropCourse($record->id);
-                    $this->redirect(static::class);
+                    $this->redirect(route('filament.admin.resources.offered-courses.register',
+                        ['program_id' => $record->program_id]));
                 })
                 ->visible(function ($record) {
                     return $this->checkifCourseExists($record->id);
@@ -170,7 +180,8 @@ class OfferedCourses extends ListRecords
                 ->url(function () {
                     $voucher = PaymentVoucher::whereHas('studentEnrollment',
                         function ($query) {
-                            $query->where('student_id', $this->student->id);
+                            $query->where(['student_id' => $this->student->id,
+                                'program_id' => $this->program_id]);
                         })->where('status', 'Pending')->first();
 
                     if ($voucher) {
@@ -198,7 +209,7 @@ class OfferedCourses extends ListRecords
     {
         $offeredCourse = OfferedCourse::find($offeredCourseId);
         $isRegistered = StudentEnrollmentDetail::whereHas('studentEnrollment', function ($query) {
-            $query->where('student_id', $this->student->id);
+            $query->where(['student_id' => $this->student->id, 'program_id' => $this->program_id]);
         })->whereIn('status', ['Enrolled', 'Completed'])
             ->whereHas('offeredCourse', function ($query) use ($offeredCourse) {
                 $query->where('program_course_id', $offeredCourse->program_course_id);
@@ -267,7 +278,7 @@ class OfferedCourses extends ListRecords
     public function lockRegistration()
     {
         $enrollment = StudentEnrollment::where($this->whereArr)->where('status', 'Draft')->first();
-        if(empty($enrollment)) {
+        if (empty($enrollment)) {
             Notification::make()
                 ->title('Enrollment Not Found')
                 ->danger()

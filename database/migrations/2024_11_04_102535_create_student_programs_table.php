@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('student_programs', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('student_id')->constrained()->onDelete('cascade'); // Reference to the students table
             $table->foreignId('program_id')->constrained()->onDelete('cascade'); // Reference to the programs table
             $table->enum('status', ['Pre-Enrollment', 'Enrolled', 'Graduated', 'Suspended', 'Withdrawn', 'Deferred']);
-            $table->primary(['student_id', 'program_id']);
         });
     }
 

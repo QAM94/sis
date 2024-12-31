@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserResource extends Resource
 {
@@ -37,7 +38,7 @@ class UserResource extends Resource
                     ->minLength(8)
                     ->maxLength(255),
                 Forms\Components\Select::make('roles')
-                    ->relationship('roles', 'name')
+                    ->relationship('roles', 'name', fn ($query) => $query->where('name', '!=', 'student')) // Exclude the 'student' role
                     ->preload() // Preloads available options
                     ->required(),
             ]);
@@ -54,7 +55,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('roles.name')
                     ->label('Roles')
                     ->badge() // Adds a badge style
-                    ->sortable(), // Limits to 3 roles in the list
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -83,5 +84,13 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'student');
+            });
     }
 }

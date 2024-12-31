@@ -17,7 +17,8 @@ class ListOfferedCourses extends ListRecords
             Actions\CreateAction::make()
                 ->url(fn () => route('filament.admin.resources.offered-courses.create',
                     ['semester_id' => request()->get('semester_id')]))
-                ->mutateFormDataUsing(fn (array $data) => array_merge($data, ['semester_id' => request()->get('semester_id')])),
+                ->mutateFormDataUsing(fn (array $data) => array_merge($data,
+                    ['semester_id' => request()->get('semester_id')])),
         ];
     }
 

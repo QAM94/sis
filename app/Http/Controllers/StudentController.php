@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OfferedCourse;
 use App\Models\PaymentVoucher;
+use App\Models\Semester;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 
-class VoucherController extends Controller
+class StudentController extends Controller
 {
     public function downloadPaymentVoucher(PaymentVoucher $voucher)
     {

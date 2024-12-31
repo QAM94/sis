@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('programs', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['Under-Graduate', 'Graduate', 'Postgraduate']);
+            $table->enum('type', ['Diploma', 'Under-Graduate', 'Graduate', 'Postgraduate']);
             $table->string('title');
             $table->text('description')->nullable();
             $table->timestamps();

@@ -11,4 +11,10 @@ class Semester extends Model
 
     protected $fillable = ['type', 'year', 'start_date', 'end_date', 'reg_begin_at', 'reg_lock_at',
         'min_courses', 'max_courses'];
+
+    public static function getCurrentSemester() {
+        return self::whereDate('reg_begin_at', '<=', now())
+            ->where('reg_lock_at', '>=', now())
+            ->first();
+    }
 }

@@ -25,7 +25,8 @@ class ProgramResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('type')
-                    ->options(['Under-Graduate' => 'Under-Graduate',
+                    ->options(['Diploma' => 'Diploma',
+                        'Under-Graduate' => 'Under-Graduate',
                         'Graduate' => 'Graduate',
                         'Postgraduate' => 'Postgraduate'])
                     ->required(),
@@ -59,7 +60,7 @@ class ProgramResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('Type')
-                    ->options([
+                    ->options(['Diploma' => 'Diploma',
                         'Under-Graduate' => 'Under-Graduate',
                         'Graduate' => 'Graduate',
                         'Postgraduate' => 'Postgraduate'

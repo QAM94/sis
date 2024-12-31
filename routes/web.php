@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\VoucherController;
+use App\Http\Controllers\StudentController;
 
-Route::get('/voucher/{voucher}/download', [VoucherController::class, 'downloadPaymentVoucher'])
+Route::get('/voucher/{voucher}/download', [StudentController::class, 'downloadPaymentVoucher'])
     ->name('voucher.download');
 
