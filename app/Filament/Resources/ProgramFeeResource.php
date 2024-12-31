@@ -23,10 +23,14 @@ class ProgramFeeResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('program_id')
-                    ->relationship('program', 'title')
-                    ->label('Program')
+                Forms\Components\Hidden::make('program_id')
+                    ->default(fn() => request()->get('program_id')) // Dynamically set default from URL
                     ->required(),
+                Forms\Components\Select::make('program')
+                    ->relationship('program', 'title')
+                    ->default(fn() => request()->get('program_id')) // Dynamically set default from URL
+                    ->label('Program')
+                    ->disabled(),
 
                 Forms\Components\TextInput::make('admission_fee')
                     ->label('Admission Fee')
@@ -66,6 +70,7 @@ class ProgramFeeResource extends Resource
                     ->label('Other Fee')
                     ->numeric()
                     ->required(),
+
             ]);
     }
 

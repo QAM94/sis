@@ -9,4 +9,5 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateProgramFee extends CreateRecord
 {
     protected static string $resource = ProgramFeeResource::class;
+    protected static bool $canCreateAnother = false;
 }

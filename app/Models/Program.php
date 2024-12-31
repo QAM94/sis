@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Program extends Model
@@ -21,6 +22,11 @@ class Program extends Model
     public function programCourses(): HasMany
     {
         return $this->hasMany(ProgramCourse::class);
+    }
+
+    public function programFee(): HasOne
+    {
+        return $this->hasOne(ProgramFee::class);
     }
 
     public function studentPrograms(): HasMany

@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\ProgramFeeResource\Pages\CreateProgramFee;
 use App\Filament\Resources\ProgramResource\Pages;
 use App\Filament\Resources\ProgramResource\RelationManagers;
 use App\Filament\Traits\HasResourcePermissions;
+use App\Models\OfferedCourse;
 use App\Models\Program;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -69,6 +71,22 @@ class ProgramResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('fees')
+                    ->label(function ($record) {
+                        if(!empty($record->programFee)) {
+                            return 'Update Fee';
+                        }
+                        return 'Add Fee';
+                    })
+                    ->icon('heroicon-o-credit-card')
+                    ->url(function ($record) {
+                        if(!empty($record->programFee)) {
+                            return route('filament.admin.resources.program-fees.edit',
+                                ['record' => $record->programFee->id]);
+                        }
+                        return route('filament.admin.resources.program-fees.create',
+                            ['program_id' => $record->id]);
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -91,7 +109,7 @@ class ProgramResource extends Resource
             'create' => Pages\CreateProgram::route('/create'),
             'view' => Pages\ViewProgram::route('/{record}'),
             'edit' => Pages\EditProgram::route('/{record}/edit'),
-            'offerCourses' => \App\Filament\Resources\OfferedCourseResource\Pages\CreateOfferedCourse::route('/create/{record}')
+            'fees' => CreateProgramFee::route('/create/{record}')
         ];
     }
 }
