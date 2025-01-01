@@ -80,6 +80,11 @@ class CourseTimingResource extends Resource
 
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
-        return parent::getEloquentQuery()->orderBy('id', 'DESC');
+        return parent::getEloquentQuery()
+            ->whereHas('offeredCourse.studentEnrollments', function ($query) {
+                $query->where('student_enrollment_details.status', '!=', 'Dropped');
+            })
+            ->orderBy('created_at', 'DESC');
     }
+
 }
