@@ -17,10 +17,10 @@ class ProgramFee extends Model
         return $this->belongsTo(Program::class);
     }
 
-    public static function getSemesterFee($student, $enrolledCourses)
+    public static function getSemesterFee($student_id, $program_id, $enrolledCourses)
     {
         $tutionFee = $totalFee = 0;
-        $programFees = self::where('program_id', $student->program_id)->first();
+        $programFees = self::where('program_id', $program_id)->first();
 
         switch ($programFees->fee_by) {
             case 'course':
@@ -42,8 +42,8 @@ class ProgramFee extends Model
                 break;
         }
 
-        $prevCount = PaymentVoucher::whereHas('studentEnrollment', function ($query) use ($student) {
-            $query->where('student_id', $student->id);
+        $prevCount = PaymentVoucher::whereHas('studentEnrollment', function ($query) use ($student_id) {
+            $query->where('student_id', $student_id);
         })->where('status', 'paid')->count();
 
         if($prevCount > 0){

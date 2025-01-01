@@ -11,6 +11,8 @@ class OfferedCourse extends Model
 {
     protected $fillable = ['program_id', 'program_course_id', 'instructor_id', 'semester_id'];
 
+    protected $appends = ['studentCount'];
+
     public function program(): BelongsTo
     {
         return $this->belongsTo(Program::class);
@@ -19,6 +21,18 @@ class OfferedCourse extends Model
     public function programCourse()
     {
         return $this->belongsTo(ProgramCourse::class, 'program_course_id');
+    }
+
+    public function course()
+    {
+        return $this->hasOneThrough(
+            Course::class,      // Final model to access
+            ProgramCourse::class, // Intermediate model
+            'id',               // Foreign key on ProgramCourse
+            'id',               // Foreign key on Course
+            'program_course_id', // Local key on OfferedCourse
+            'course_id'         // Local key on ProgramCourse
+        );
     }
 
     public function timings(): HasMany
@@ -53,5 +67,13 @@ class OfferedCourse extends Model
         $semester = Semester::getCurrentSemester();
         return self::where(['program_id' => $program_id,
             'semester_id' => $semester->id])->count();
+    }
+
+    public function getStudentCountAttribute()
+    {
+        return StudentEnrollment::where('semester_id', $this->semester_id)
+            ->where('status', '!=', 'Draft')->whereHas('enrollmentDetails', function ($query) {
+                $query->where('offered_course_id', $this->id)->where('status', '!=', 'Dropped');
+            })->count();
     }
 }

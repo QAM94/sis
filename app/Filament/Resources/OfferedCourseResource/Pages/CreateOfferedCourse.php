@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\OfferedCourseResource\Pages;
 
 use App\Filament\Resources\OfferedCourseResource;
+use App\Models\OfferedCourse;
 use App\Models\Semester;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -20,10 +21,10 @@ class CreateOfferedCourse extends CreateRecord
         return "Offered Courses";
     }
 
-    protected function mutateFormDataBeforeCreate(array $data): array
+    /*protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Check if a record with the same combination exists
-        $exists = \App\Models\OfferedCourse::where([
+        $exists = OfferedCourse::where([
             'semester_id' => $data['semester_id'],
             'instructor_id' => $data['instructor_id'],
             'program_course_id' => $data['program_course_id']
@@ -39,5 +40,5 @@ class CreateOfferedCourse extends CreateRecord
         }
 
         return $data;
-    }
+    }*/
 }

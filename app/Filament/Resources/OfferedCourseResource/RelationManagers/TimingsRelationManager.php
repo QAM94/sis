@@ -31,6 +31,7 @@ class TimingsRelationManager extends RelationManager
                     ])
                     ->multiple()
                     ->required(),
+                Forms\Components\TextInput::make('room_no'),
                 Forms\Components\TimePicker::make('start_time')
                     ->required(),
                 Forms\Components\TimePicker::make('end_time')
@@ -46,6 +47,9 @@ class TimingsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('day')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('room_no')
+                    ->label('Room No.')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('start_time')
                     ->label('Start Time')
                     ->sortable(),
@@ -65,6 +69,7 @@ class TimingsRelationManager extends RelationManager
                             $rec = CourseTiming::create([
                                 'offered_course_id' => $this->ownerRecord->id, // Reference parent
                                 'day' => $day,
+                                'room_no' => $data['room_no'],
                                 'start_time' => $data['start_time'],
                                 'end_time' => $data['end_time'],
                             ]);
@@ -88,6 +93,7 @@ class TimingsRelationManager extends RelationManager
                                 ])
                                 ->multiple(false) // Ensure single day selection during editing
                                 ->required(),
+                            Forms\Components\TextInput::make('room_no'),
                             Forms\Components\TimePicker::make('start_time')->required(),
                             Forms\Components\TimePicker::make('end_time')->required(),
                         ];

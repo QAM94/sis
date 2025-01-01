@@ -161,7 +161,8 @@ class OfferedCourses extends ListRecords
                 ->icon('heroicon-o-document-text')
                 ->action(function () {
                     $this->lockRegistration();
-                    $this->redirect(static::class);
+                    $this->redirect(route('filament.admin.resources.offered-courses.register',
+                        ['program_id' => $this->program_id]));
                 })
                 ->visible(function () use ($voucherExists) {
                     $selectedCoursesCount = StudentEnrollmentDetail::whereHas('studentEnrollment',
@@ -292,7 +293,7 @@ class OfferedCourses extends ListRecords
         })->where('status', 'Enrolled')->with('offeredCourse.programCourse')->get();
 
         // Your logic to calculate fees and generate voucher
-        $semesterFee = ProgramFee::getSemesterFee($this->student, $enrolledCourses);
+        $semesterFee = ProgramFee::getSemesterFee($this->student->id, $this->program_id, $enrolledCourses);
 
         // Save the payment voucher
         PaymentVoucher::create([

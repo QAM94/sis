@@ -9,11 +9,11 @@ use Filament\Resources\Pages\ListRecords;
 class ListCourseTimings extends ListRecords
 {
     protected static string $resource = CourseTimingResource::class;
+    protected static ?string $title = 'Class Schedule';
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
         ];
     }
 }

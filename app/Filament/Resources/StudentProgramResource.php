@@ -78,7 +78,10 @@ class StudentProgramResource extends Resource
     {
         return [
             'index' => Pages\ListStudentPrograms::route('/'),
-//            'register' => OfferedCourseResource\Pages\OfferedCourses::route('/{record}/register'),
         ];
+    }
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasRole('student');
     }
 }
