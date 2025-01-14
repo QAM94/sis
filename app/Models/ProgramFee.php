@@ -27,14 +27,11 @@ class ProgramFee extends Model
                 $tutionFee = count($enrolledCourses) * $programFees->tution_fee;
                 break;
 
-            case 'credit':
-                $totalCredits = $enrolledCourses->sum(function ($enrolledCourse) {
-                    return $enrolledCourse->offeredCourse->programCourse->credits;
+            case 'hour':
+                $hours = $enrolledCourses->sum(function ($enrolledCourse) {
+                    return $enrolledCourse->offeredCourse->programCourse->hours;
                 });
-                $extraCredits = $enrolledCourses->sum(function ($enrolledCourse) {
-                    return $enrolledCourse->offeredCourse->programCourse->credits_extra;
-                });
-                $tutionFee = ($totalCredits + $extraCredits) * $programFees->tution_fee;
+                $tutionFee = $hours * $programFees->tution_fee;
                 break;
 
             case 'semester':

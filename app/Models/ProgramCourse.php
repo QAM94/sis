@@ -9,8 +9,7 @@ class ProgramCourse extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['program_id', 'domain_id', 'course_id', 'semester',
-        'credits', 'credits_extra'];
+    protected $fillable = ['program_id', 'domain_id', 'course_id', 'semester', 'hours', 'units'];
 
     public function program()
     {

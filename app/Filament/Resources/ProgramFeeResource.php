@@ -42,18 +42,18 @@ class ProgramFeeResource extends Resource
                     ->numeric()
                     ->required(),
 
-                Forms\Components\Select::make('fee_by')
-                    ->label('Semester Fee By')
-                    ->options([
-                        'course' => 'Per Course',
-                        'credit' => 'Per Credit',
-                        'semester' => 'Per Semester',
-                    ])
-                    ->required(),
-
                 Forms\Components\TextInput::make('reg_fee')
                     ->label('Registration Fee')
                     ->numeric()
+                    ->required(),
+
+                Forms\Components\Select::make('fee_by')
+                    ->label('Calculate Fee By')
+                    ->options([
+                        'course' => 'Per Course',
+                        'hour' => 'Per Hour',
+                        'semester' => 'Per Semester',
+                    ])
                     ->required(),
 
                 Forms\Components\TextInput::make('tution_fee')

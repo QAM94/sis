@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('domain_id')->constrained()->onDelete('cascade'); // Reference to the domains table
             $table->foreignId('course_id')->constrained()->onDelete('cascade'); // Reference to the courses table
             $table->integer('semester')->default(1); // Semester Number usually 1-8
-            $table->integer('credits'); // Default Course Credits
-            $table->integer('credits_extra'); // Extra Course Credits like labs
+            $table->integer('hours'); // Total Course Hours
+            $table->decimal('units');
             $table->timestamps();
         });
     }

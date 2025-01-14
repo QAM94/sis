@@ -26,16 +26,17 @@ class CoursesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('crn')
             ->columns([
-                Tables\Columns\TextColumn::make('crn')->label('CRN'),
                 Tables\Columns\TextColumn::make('pivot.domain_id')
                     ->label('Domain')
                     ->formatStateUsing(fn($state) => Domain::find($state)?->title ?? 'N/A'),
+                Tables\Columns\TextColumn::make('crn')->label('CRN'),
+                Tables\Columns\TextColumn::make('title')->label('Course Name'),
                 Tables\Columns\TextColumn::make('pivot.semester')
                     ->label('Semester'),
-                Tables\Columns\TextColumn::make('pivot.credits')
-                    ->label('Credits'),
-                Tables\Columns\TextColumn::make('pivot.credits_extra')
-                    ->label('Extra Credits'),
+                Tables\Columns\TextColumn::make('pivot.units')
+                    ->label('Units'),
+                Tables\Columns\TextColumn::make('pivot.hours')
+                    ->label('Hours'),
             ])
             ->filters([
                 //
@@ -62,17 +63,19 @@ class CoursesRelationManager extends RelationManager
                             ->minValue(1)
                             ->maxValue(8),
 
-                        Forms\Components\TextInput::make('credits')
+                        Forms\Components\TextInput::make('units')
+                            ->required()
+                            ->numeric()
+                            ->step(0.5)
+                            ->minValue(0)
+                            ->maxValue(20),
+
+                        Forms\Components\TextInput::make('hours')
                             ->required()
                             ->numeric()
                             ->minValue(1)
-                            ->maxValue(5),
+                            ->maxValue(500)
 
-                        Forms\Components\TextInput::make('credits_extra')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(5)
                     ])
             ])
             ->actions([
