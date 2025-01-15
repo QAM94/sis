@@ -3,22 +3,20 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AnnouncementResource\Pages;
-use App\Filament\Resources\AnnouncementResource\RelationManagers;
+use App\Filament\Traits\HasResourcePermissions;
 use App\Models\Announcement;
-use App\Models\Course;
 use App\Models\CourseTiming;
-use App\Models\OfferedCourse;
 use App\Models\Program;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AnnouncementResource extends Resource
 {
+    use HasResourcePermissions;
+
     protected static ?string $model = Announcement::class;
     protected static ?string $module = 'announcement';
 
