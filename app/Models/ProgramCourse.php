@@ -31,4 +31,9 @@ class ProgramCourse extends Model
         return $this->belongsToMany(Student::class, 'student_courses')
             ->withPivot('semester', 'enrolled_at', 'dropped_at', 'status');
     }
+
+    public function offeredCourses()
+    {
+        return $this->hasMany(OfferedCourse::class);
+    }
 }
