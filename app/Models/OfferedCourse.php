@@ -62,9 +62,12 @@ class OfferedCourse extends Model
         );
     }
 
-    public static function courseCount($program_id)
+    public static function courseCount($program_id = 0)
     {
         $semester = Semester::getCurrentSemester();
+        if($program_id == 0) {
+            return self::where(['semester_id' => $semester->id])->count();
+        }
         return self::where(['program_id' => $program_id,
             'semester_id' => $semester->id])->count();
     }
