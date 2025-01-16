@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('payment_vouchers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('enrollment_id')->constrained()->onDelete('cascade'); // Reference to the student_enrollments table
+            $table->foreignId('student_enrollment_id')->constrained()->onDelete('cascade'); // Reference to the student_enrollments table
             $table->decimal('total_amount', 10, 2);
             $table->json('fee_breakdown')->nullable(); // Store detailed breakdown (JSON)
             $table->enum('status', ['Pending', 'Paid'])->default('Pending');
