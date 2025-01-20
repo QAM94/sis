@@ -11,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payment_vouchers', function (Blueprint $table) {
+        Schema::create('fee_vouchers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_enrollment_id')->constrained()->onDelete('cascade'); // Reference to the student_enrollments table
+            $table->string('voucher_number')->unique();
             $table->decimal('total_amount', 10, 2);
             $table->json('fee_breakdown')->nullable(); // Store detailed breakdown (JSON)
-            $table->enum('status', ['Pending', 'Paid'])->default('Pending');
+            $table->enum('status', ['Pending', 'Confirmed', 'Rejected']);
+            $table->date('payment_date')->nullable();
+            $table->string('payment_proof')->nullable(); // Path to the uploaded proof image
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('payment_vouchers');
+        Schema::dropIfExists('fee_vouchers');
     }
 };

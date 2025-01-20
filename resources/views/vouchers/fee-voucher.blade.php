@@ -89,7 +89,7 @@
 <body>
 <div class="voucher-container">
     <div class="header">
-        <h1>Payment Voucher</h1>
+        <h1>Fee Voucher</h1>
         <h3>Voucher ID: {{ $voucher->id }}</h3>
     </div>
 

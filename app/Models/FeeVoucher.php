@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PaymentVoucher extends Model
+class FeeVoucher extends Model
 {
-    protected $fillable = ['enrollment_id', 'total_amount', 'fee_breakdown', 'status'];
+    protected $fillable = ['student_enrollment_id', 'voucher_number', 'total_amount', 'fee_breakdown',
+        'status', 'payment_date', 'payment_proof'];
 
     public $appends = ['student', 'semester'];
 
@@ -23,6 +24,6 @@ class PaymentVoucher extends Model
 
     public function studentEnrollment(): BelongsTo
     {
-        return $this->belongsTo(StudentEnrollment::class, 'enrollment_id');
+        return $this->belongsTo(StudentEnrollment::class);
     }
 }

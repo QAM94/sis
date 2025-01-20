@@ -4,7 +4,7 @@ namespace App\Filament\Resources\OfferedCourseResource\Pages;
 
 use App\Filament\Resources\OfferedCourseResource;
 use App\Models\OfferedCourse;
-use App\Models\PaymentVoucher;
+use App\Models\FeeVoucher;
 use App\Models\Program;
 use App\Models\ProgramFee;
 use App\Models\Semester;
@@ -149,7 +149,7 @@ class OfferedCourses extends ListRecords
 
     protected function getTableHeaderActions(): array
     {
-        $voucherExists = PaymentVoucher::whereHas('studentEnrollment',
+        $voucherExists = FeeVoucher::whereHas('studentEnrollment',
             function ($query) {
                 $query->where($this->whereArr);
             })->exists();
@@ -176,10 +176,10 @@ class OfferedCourses extends ListRecords
 
             // Download Voucher Button
             Tables\Actions\Action::make('download_voucher')
-                ->label('Download Payment Voucher')
+                ->label('Download Fee Voucher')
                 ->icon('heroicon-o-document-text')
                 ->url(function () {
-                    $voucher = PaymentVoucher::whereHas('studentEnrollment',
+                    $voucher = FeeVoucher::whereHas('studentEnrollment',
                         function ($query) {
                             $query->where(['student_id' => $this->student->id,
                                 'program_id' => $this->program_id]);
@@ -288,6 +288,7 @@ class OfferedCourses extends ListRecords
         }
         $enrollment->status = 'Locked';
         $enrollment->save();
+
         $enrolledCourses = StudentEnrollmentDetail::whereHas('studentEnrollment', function ($query) {
             $query->where($this->whereArr);
         })->where('status', 'Enrolled')->with('offeredCourse.programCourse')->get();
@@ -295,9 +296,11 @@ class OfferedCourses extends ListRecords
         // Your logic to calculate fees and generate voucher
         $semesterFee = ProgramFee::getSemesterFee($this->student->id, $this->program_id, $enrolledCourses);
 
+        $voucher_number = $this->student->reg_no.'_'.str_pad($enrollment->id, 3, '0', STR_PAD_LEFT);
         // Save the payment voucher
-        PaymentVoucher::create([
-            'enrollment_id' => $enrollment->id,
+        FeeVoucher::create([
+            'student_enrollment_id' => $enrollment->id,
+            'voucher_number' => $voucher_number,
             'total_amount' => $semesterFee['total'],
             'fee_breakdown' => json_encode($semesterFee['breakdown']),
             'status' => 'Pending',

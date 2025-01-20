@@ -56,6 +56,12 @@ class CourseTimingResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('attendance_sheet')
+                    ->label('Attendance Sheet')
+                    ->icon('heroicon-o-document-text')
+                    ->url(function ($record) {
+                        return route('attendance_sheet.download', ['id' => $record->id]);
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

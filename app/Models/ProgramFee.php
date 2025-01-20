@@ -39,7 +39,7 @@ class ProgramFee extends Model
                 break;
         }
 
-        $prevCount = PaymentVoucher::whereHas('studentEnrollment', function ($query) use ($student_id) {
+        $prevCount = FeeVoucher::whereHas('studentEnrollment', function ($query) use ($student_id) {
             $query->where('student_id', $student_id);
         })->where('status', 'paid')->count();
 
