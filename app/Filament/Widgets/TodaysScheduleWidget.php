@@ -31,9 +31,4 @@ class TodaysScheduleWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('offeredCourse.studentCount')->label('Students'),
             ]);
     }
-
-    protected static function getDefaultColumns(): int
-    {
-        return 12; // Ensure the dashboard supports a full-width layout
-    }
 }

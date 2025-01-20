@@ -15,6 +15,12 @@ class Student extends Model
     protected $fillable = ['user_id', 'reg_no', 'first_name', 'last_name', 'contact', 'email',
         'address', 'postcode', 'nationality', 'sin', 'dob', 'gender'];
 
+    protected $appends = ['full_name'];
+
+    public function getFullNameAttribute() {
+        return $this->first_name.' '.$this->last_name;
+    }
+
     public function programs(): BelongsToMany
     {
         return $this->belongsToMany(Program::class, 'student_programs');
