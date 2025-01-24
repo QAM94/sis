@@ -26,4 +26,9 @@ class RecentRegistrationsWidget extends BaseWidget
                     ->label('Status'),
             ]);
     }
+
+    public static function canView(): bool
+    {
+        return auth()->user()->hasRole('admin');
+    }
 }

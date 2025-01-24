@@ -225,6 +225,7 @@ class OfferedCourses extends ListRecords
                 'student_enrollment_id' => $enrollment->id,
                 'offered_course_id' => $offeredCourseId,
             ], [
+                'enrolled_at' => date('Y-m-d'),
                 'dropped_at' => null,
                 'status' => 'Enrolled',
             ]);

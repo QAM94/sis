@@ -15,9 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('student_enrollment_id')->constrained()->onDelete('cascade'); // Reference to the student enrollments table
             $table->foreignId('offered_course_id')->constrained()->onDelete('cascade'); // Reference to the offered courses table
-            $table->date('enrolled_at')->default(now()); // Date when the student enrolled in the course
+            $table->decimal('score', 4, 1)->nullable(); // E.g., 90.0, 94.5
+            $table->string('grade', 9)->nullable(); // E.g., A, B, C
+            $table->text('comments')->nullable(); // Optional remarks
+            $table->date('enrolled_at')->nullable(); // Date when the student enrolled in the course
             $table->date('dropped_at')->nullable(); // Date when the student dropped the course
-            $table->enum('status', ['Enrolled', 'Dropped', 'Completed'])->default('Enrolled');
+            $table->date('completed_at')->nullable(); // Date when the student completed the course
+            $table->enum('status', ['Enrolled', 'Dropped', 'Completed']);
         });
     }
 

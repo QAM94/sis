@@ -34,4 +34,9 @@ class RecentPaymentsWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('payment_date')->label('Payment Date')->date()
             ]);
     }
+
+    public static function canView(): bool
+    {
+        return auth()->user()->hasRole('admin');
+    }
 }

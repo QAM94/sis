@@ -10,8 +10,8 @@ class StudentEnrollmentDetail extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['student_enrollment_id', 'offered_course_id', 'enrolled_at', 'dropped_at',
-        'status'];
+    protected $fillable = ['student_enrollment_id', 'offered_course_id', 'score', 'grade',
+        'comments', 'enrolled_at', 'dropped_at', 'completed_at', 'status'];
 
     public function studentEnrollment()
     {
@@ -21,6 +21,18 @@ class StudentEnrollmentDetail extends Model
     public function offeredCourse(): belongsTo
     {
         return $this->belongsTo(OfferedCourse::class, 'offered_course_id');
+    }
+
+    public function student()
+    {
+        return $this->hasOneThrough(
+            Student::class,      // Final model to access
+            studentEnrollment::class, // Intermediate model
+            'id',               // Foreign key on studentEnrollment
+            'id',               // Foreign key on Student
+            'student_enrollment_id', // Local key on StudentEnrollmentDetail
+            'student_id'         // Local key on studentEnrollment
+        );
     }
 
     public function programCourse(): hasOneThrough
