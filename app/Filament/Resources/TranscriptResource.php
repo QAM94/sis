@@ -20,7 +20,6 @@ class TranscriptResource extends Resource
 
     protected static ?string $model = OfferedCourse::class;
     protected static ?string $module = 'transcript';
-
     protected static ?string $pluralLabel = 'Transcripts';
     protected static ?int $navigationSort = 2; // Adjust as needed for menu position
 
