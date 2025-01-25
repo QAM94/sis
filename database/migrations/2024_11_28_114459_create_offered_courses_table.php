@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('program_course_id')->constrained()->onDelete('cascade'); // Reference to the program courses table
             $table->foreignId('instructor_id')->constrained()->onDelete('cascade'); // Reference to the instructors table
             $table->foreignId('semester_id')->constrained()->onDelete('cascade'); // Reference to the semesters table
+            $table->enum('status', ['Offered', 'Scheduled', 'Completed', 'Cancelled']);
             $table->timestamps();
         });
     }

@@ -9,6 +9,29 @@ class CourseTiming extends Model
 {
     protected $fillable = ['offered_course_id', 'room_no', 'day', 'start_time', 'end_time'];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Handle "created" event
+        static::created(function ($courseTiming) {
+            $offeredCourse = $courseTiming->offeredCourse;
+            if ($offeredCourse->status === 'Offered') {
+                $offeredCourse->update(['status' => 'Scheduled']);
+            }
+        });
+
+        // Handle "deleted" event
+        static::deleted(function ($courseTiming) {
+            $offeredCourse = $courseTiming->offeredCourse;
+
+            // Check if the course has no more timings
+            if ($offeredCourse->timings()->count() === 0) {
+                $offeredCourse->update(['status' => 'Cancelled']);
+            }
+        });
+    }
+
     public function offeredCourse(): BelongsTo
     {
         return $this->belongsTo(OfferedCourse::class);

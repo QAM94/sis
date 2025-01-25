@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\ClassGradesImport;
 use App\Models\CourseTiming;
 use App\Models\OfferedCourse;
 use App\Models\FeeVoucher;
@@ -10,11 +9,7 @@ use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentEnrollmentDetail;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
-use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -144,8 +139,9 @@ class StudentController extends Controller
         $writer->save('php://output');
     }
 
-    public function downloadGradeSheet($schedule_id)
+    public function downloadGradeSheet($offered_course_id)
     {
+        $schedule_id = CourseTiming::where('offered_course_id', $offered_course_id)->first()->id;
         $data = $this->getSheetData($schedule_id);
 
         // Create a new spreadsheet
@@ -154,7 +150,7 @@ class StudentController extends Controller
         $sheet = $this->setHeader($spreadsheet->getActiveSheet(), $data);
 
         $enrollments = StudentEnrollmentDetail::with('student')
-            ->where('offered_course_id', $data['class']->offered_course_id)->get();
+            ->where('offered_course_id', $offered_course_id)->get();
 
         // Set column widths
         $sheet->getColumnDimension('A')->setWidth(14);  // For Student ID
@@ -308,23 +304,6 @@ class StudentController extends Controller
 
 
         return $sheet;
-    }
-
-    public function uploadGradeSheet(Request $request, $schedule_id)
-    {
-        // Validate uploaded file
-        $request->validate([
-            'grades_file' => 'required|file|mimes:xlsx,xls',
-        ]);
-
-        try {
-            // Load the file and pass it to ClassGradesImport
-
-
-            return redirect()->back()->with('success', 'Grades imported successfully.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to import grades: ' . $e->getMessage());
-        }
     }
 
 }

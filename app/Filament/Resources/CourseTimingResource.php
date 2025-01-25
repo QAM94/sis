@@ -32,9 +32,6 @@ class CourseTimingResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('offered_course_id')
-                    ->relationship('offeredCourse', 'programCourse.course.title')
-                    ->required(),
                 Forms\Components\TextInput::make('room_no'),
                 Forms\Components\TextInput::make('day')->required(),
                 Forms\Components\TimePicker::make('start_time')->required(),
@@ -59,56 +56,21 @@ class CourseTimingResource extends Resource
                 //
             ])
             ->actions([
-                // Download Attendance Sheet
-                Tables\Actions\Action::make('attendance_sheet')
-                    ->label('Attendance Sheet')
-                    ->icon('heroicon-o-document-text')
-                    ->url(function ($record) {
-                        return route('attendance_sheet.download', ['id' => $record->id]);
-                    })
-                    ->openUrlInNewTab(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make()
+                        ->color('warning'),
+                    // Download Attendance Sheet
+                    Tables\Actions\Action::make('attendance_sheet')
+                        ->label('Download Attendance Sheet')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->url(function ($record) {
+                            return route('attendance_sheet.download', ['id' => $record->id]);
+                        })
+                        ->color('info')
+                        ->openUrlInNewTab(),
 
-                // Download Grade Sheet
-                Tables\Actions\Action::make('grade_sheet')
-                    ->label('Grade Sheet')
-                    ->icon('heroicon-o-document-text')
-                    ->url(function ($record) {
-                        return route('grade_sheet.download', ['id' => $record->id]);
-                    })
-                    ->openUrlInNewTab(),
 
-                // Upload Grade Sheet
-                Tables\Actions\Action::make('upload_grade_sheet')
-                    ->label('Upload Grade Sheet')
-                    ->icon('heroicon-o-document-text')
-                    ->form([
-                        Forms\Components\FileUpload::make('grade_sheet')
-                            ->label('Upload Grade Sheet')
-                            ->acceptedFileTypes(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'])
-                            ->required()->directory('grade_sheets'),
-                    ])
-                    ->action(function (array $data, $record) {
-                        // Determine if the file is stored in the public directory
-                        $filePath = public_path("storage/{$data['grade_sheet']}"); // For public storage
-
-                        // Ensure the file exists before processing
-                        if (!file_exists($filePath)) {
-                            Notification::make()
-                                ->title('File Not Found')
-                                ->danger()
-                                ->send();
-                        }
-                        try {
-                            // Call your existing import logic
-                            Excel::import(new ClassGradesImport($record->id), $filePath);
-                            return Notification::make()
-                                ->title('Grade Sheet Uploaded')
-                                ->success()
-                                ->send();
-                        } catch (\Exception $e) {
-                            return redirect()->back()->with('error', 'Failed to import grades: ' . $e->getMessage());
-                        }
-                    }),
+                ])->button()->label('Actions')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -128,16 +90,16 @@ class CourseTimingResource extends Resource
     {
         return [
             'index' => Pages\ListCourseTimings::route('/'),
+            'edit' => Pages\EditCourseTiming::route('/{record}/edit'),
         ];
     }
 
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
         return parent::getEloquentQuery()
-            ->whereHas('offeredCourse.studentEnrollments', function ($query) {
-                $query->where('student_enrollment_details.status', '!=', 'Dropped');
-            })
-            ->orderBy('created_at', 'DESC');
+            ->whereHas('offeredCourse', function ($query) {
+                $query->where('status', 'Scheduled');
+            })->orderBy('created_at', 'DESC');
     }
 
 }

@@ -2,50 +2,53 @@
 
 namespace App\Imports;
 
-use App\Models\CourseTiming;
-use App\Models\StudentEnrollmentDetail;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use App\Models\StudentEnrollmentDetail;
 
-class ClassGradesImport implements ToCollection, WithHeadingRow
+class ClassGradesImport implements ToCollection
 {
-    protected $schedule_id;
+    private $offered_course_id;
 
-    // Constructor to accept schedule_id
-    public function __construct($schedule_id)
+    public function __construct($offered_course_id)
     {
-        $this->schedule_id = $schedule_id;
+        $this->offered_course_id = $offered_course_id;
     }
 
     public function collection(Collection $collection)
     {
-        $start = 9;
-        $transcripts = [];
-        while ($collection[$start][0] != NULL) {
-            array_push($transcripts, [
-                    'studentId' => $collection[$start][0],
-                    'score' => $collection[$start][3],
-                    'grade' => $collection[$start][4],
-                    'comments' => $collection[$start][5]
-                ]
-            );
-            $start++;
-        }
-        $course_id = CourseTiming::find($this->schedule_id)->offered_course_id;
+        // Start reading data from row 9 (assuming headers are above row 9)
+        $startRow = 9;
 
-        foreach ($transcripts as $transcript) {
-            $enrollment = StudentEnrollmentDetail::whereHas('student', function ($query) use ($transcript) {
-                $query->where('reg_no', $transcript['studentId']);
-            })->where('offered_course_id', $course_id)->first();
+        foreach ($collection as $index => $row) {
+            if ($index < $startRow || empty($row[0])) {
+                continue; // Skip rows before the start or empty rows
+            }
 
-            $enrollment->score = $transcript['score'];
-            $enrollment->grade = $transcript['grade'];
-            $enrollment->comments = $transcript['comments'];
-            $enrollment->completed_at = date('Y-m-d');
-            $enrollment->status = 'Completed';
-            $enrollment->save();
+            $studentRegNo = $row[0] ?? null; // Registration number
+            $score = $row[3] ?? null;       // Score
+            $grade = $row[4] ?? null;       // Grade
+            $comments = $row[5] ?? null;    // Comments
+
+            if ($studentRegNo) {
+                // Match enrollment by student registration number and course ID
+                $enrollment = StudentEnrollmentDetail::whereHas('student', function ($query) use ($studentRegNo) {
+                    $query->where('reg_no', $studentRegNo);
+                })->where('offered_course_id', $this->offered_course_id)->first();
+
+                if ($enrollment) {
+                    $enrollment->update([
+                        'score' => $score,
+                        'grade' => $grade,
+                        'comments' => $comments,
+                        'completed_at' => date('Y-m-d'),
+                        'status' => 'Completed',
+                    ]);
+                } else {
+                    Log::warning("Enrollment not found for student registration number: {$studentRegNo}");
+                }
+            }
         }
     }
 }
-

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class OfferedCourse extends Model
 {
-    protected $fillable = ['program_id', 'program_course_id', 'instructor_id', 'semester_id'];
+    protected $fillable = ['program_id', 'program_course_id', 'instructor_id', 'semester_id', 'status'];
 
     protected $appends = ['studentCount'];
 
@@ -37,7 +37,7 @@ class OfferedCourse extends Model
 
     public function timings(): HasMany
     {
-        return $this->hasMany(CourseTiming::class, 'offered_course_id');
+        return $this->hasMany(CourseTiming::class);
     }
 
     public function instructor(): BelongsTo
@@ -48,6 +48,10 @@ class OfferedCourse extends Model
     public function semester(): BelongsTo
     {
         return $this->BelongsTo(Semester::class);
+    }
+    public function studentEnrollmentDetails()
+    {
+        return $this->hasMany(StudentEnrollmentDetail::class, 'offered_course_id');
     }
 
     public function studentEnrollments(): hasManyThrough
