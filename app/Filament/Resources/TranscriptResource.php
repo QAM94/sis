@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TranscriptResource\Pages;
+use App\Filament\Traits\HasResourcePermissions;
 use App\Imports\ClassGradesImport;
 use App\Models\OfferedCourse;
 use Filament\Forms;
@@ -15,7 +16,10 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class TranscriptResource extends Resource
 {
+    use HasResourcePermissions;
+
     protected static ?string $model = OfferedCourse::class;
+    protected static ?string $module = 'transcript';
 
     protected static ?string $pluralLabel = 'Transcripts';
     protected static ?int $navigationSort = 2; // Adjust as needed for menu position
