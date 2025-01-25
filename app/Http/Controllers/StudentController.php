@@ -23,7 +23,7 @@ class StudentController extends Controller
 {
     public function downloadFeeVoucher(FeeVoucher $voucher)
     {
-        $pdf = Pdf::loadView('vouchers.fee-voucher', ['voucher' => $voucher]);
+        $pdf = Pdf::loadView('pdf.fee-voucher', ['voucher' => $voucher]);
 
         // Return the PDF as a download
         return $pdf->download("fee-voucher-{$voucher->id}.pdf");

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\StudentResource\Pages;
+use App\Filament\Resources\StudentResource\RelationManagers\ProgramsRelationManager;
 use App\Filament\Traits\HasResourcePermissions;
 use App\Models\Student;
 use Filament\Forms;
@@ -23,10 +24,6 @@ class StudentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('programs')
-                    ->relationship('programs', 'title')
-                    ->multiple()->preload()
-                    ->required(),
                 Forms\Components\TextInput::make('reg_no')
                     ->required()
                     ->numeric(),
@@ -147,7 +144,7 @@ class StudentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ProgramsRelationManager::class,
         ];
     }
 

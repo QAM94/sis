@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StudentProgram extends Model
 {
-    protected $fillable = ['student_id', 'program_id', 'status'];
+    public $timestamps = false;
+    protected $fillable = ['student_id', 'program_id', 'status', 'enrolled_on'];
 
     public function student(): BelongsTo
     {

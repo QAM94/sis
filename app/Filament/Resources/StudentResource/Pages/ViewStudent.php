@@ -37,8 +37,9 @@ class ViewStudent extends ViewRecord
                                 Infolists\Components\TextEntry::make('postcode')->label('Postcode'),
                                 Infolists\Components\TextEntry::make('nationality')->label('Nationality'),
                                 Infolists\Components\TextEntry::make('sin')->label('SIN'),
-                                Infolists\Components\TextEntry::make('enrollment_date')->label('Enrollment Date')->date(),
                                 Infolists\Components\TextEntry::make('status')->label('Status'),
+                                Infolists\Components\TextEntry::make('created_at')->label('Joined On')->date(),
+                                Infolists\Components\TextEntry::make('updated_at')->label('Last Updated')->date(),
                             ])->columns(3),
                         Tabs\Tab::make('Enrollments')
                             ->icon('heroicon-o-inbox-stack')

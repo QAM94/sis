@@ -23,11 +23,11 @@ class StudentEnrollmentDetail extends Model
         return $this->belongsTo(OfferedCourse::class, 'offered_course_id');
     }
 
-    public function student()
+    public function student(): hasOneThrough
     {
         return $this->hasOneThrough(
             Student::class,      // Final model to access
-            studentEnrollment::class, // Intermediate model
+            StudentEnrollment::class, // Intermediate model
             'id',               // Foreign key on studentEnrollment
             'id',               // Foreign key on Student
             'student_enrollment_id', // Local key on StudentEnrollmentDetail
